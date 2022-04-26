@@ -3,7 +3,12 @@ package me.alexjs.event;
 import java.lang.reflect.Method;
 import java.util.EventListener;
 
-public class Subscriber {
+/**
+ * Very simple data object for holding an {@link EventListener} and a {@link Method} within it.
+ *
+ * This class is package-private because it really doesn't need to be externally visible.
+ */
+class Subscriber {
 
     private final EventListener listener;
     private final Method method;

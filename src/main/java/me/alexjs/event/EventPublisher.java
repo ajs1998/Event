@@ -11,12 +11,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Register your subscriber methods with an {@link EventPublisher}.
+ * <p>
+ * Only {@code public void} methods annotated with {@link Subscribe} will be registered.
+ */
 public class EventPublisher {
 
     private static final Logger log = LogManager.getLogger(EventPublisher.class);
 
     private final Map<Class<? extends Event>, List<Subscriber>> listeners = new HashMap<>();
 
+    /**
+     * Register an {@code EventListener} with this publisher.
+     * <p>
+     * Each {@code public void} method annotated with {@code Subscribe} in the listener class will be added to a list.
+     * When events are published, only methods that have subscribed to that event will be invoked.
+     *
+     * @param listener a listener for this publisher to notify when events are published
+     */
     public void register(EventListener listener) {
 
         for (Method method : listener.getClass().getDeclaredMethods()) {
@@ -42,7 +55,7 @@ public class EventPublisher {
                 Subscriber subscriber = new Subscriber(listener, method);
                 Class<? extends Event> type = (Class<? extends Event>) method.getParameters()[0].getType();
 
-                log.info("Registering listener for type: {}", type.getName());
+                log.info("Registering listener for event: {}", type.getName());
 
                 // Register the listener
                 if (listeners.containsKey(type)) {
@@ -59,16 +72,25 @@ public class EventPublisher {
 
     }
 
+    /**
+     * Publish an event to all registered listeners.
+     * <p>
+     * Only listeners that have subscribed to this kind of event will be notified.
+     * <p>
+     * If an exception occurs in one listener, it will be logged and dropped.
+     * The publisher should have no opinion on the result of one subscriber's notification.
+     *
+     * @param event the event to publish to registered listeners
+     */
     public void publish(Event event) {
-
-        Class<? extends Event> type = event.getClass();
 
         // Iterate through the listeners for this type of event and invoke the subscriber method
         if (!listeners.isEmpty()) {
-            for (Subscriber subscriber : listeners.get(type)) {
+            for (Subscriber subscriber : listeners.get(event.getClass())) {
                 try {
                     subscriber.getMethod().invoke(subscriber.getListener(), event);
                 } catch (Throwable ignore) {
+                    // Drop the exception. The publisher doesn't care at all if one of its listeners fails
                     log.error("Error while publishing event", ignore);
                 }
             }
