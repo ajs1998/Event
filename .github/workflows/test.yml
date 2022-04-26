@@ -1,0 +1,33 @@
+name: Java CI
+
+on: [ push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        jdk: [ '11', '16', '17', '18' ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: 'temurin'
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1.0.4
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2.1.5
+        with:
+          arguments: test
+
+      - uses: actions/upload-artifact@v3.0.0
+        with:
+          name: Test Results (JDK ${{ matrix.jdk }})
+          path: build/reports/tests/

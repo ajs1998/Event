@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group 'me.alexjs'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+
+    testImplementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+    testImplementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+compileJava {
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ajs1998/Event")
+            credentials {
+                username = System.getenv("USERNAME")
+                password = System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
