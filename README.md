@@ -65,7 +65,7 @@ class MyListenerThatCounts implements EventListener {
 class MyEvent implements Event {
 
     private String action;
-    private boolean status;
+    private boolean available;
 
     public String getAction() {
         return action;
@@ -75,12 +75,12 @@ class MyEvent implements Event {
         this.action = action;
     }
 
-    public boolean isStatus() {
-        return status;
+    public boolean isAvailable() {
+        return available;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
 }
