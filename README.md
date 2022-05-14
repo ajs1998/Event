@@ -32,7 +32,7 @@ class MyListenerForLogging implements EventListener {
     public void listenForMyEvent(MyEvent event) {
         System.out.println("This action just happened: " + event.getAction());
     }
-    
+
     @Subscribe
     public void didActionFail(MyEvent event) {
         if (!event.getStatus()) {
@@ -50,7 +50,7 @@ class MyListenerThatCounts implements EventListener {
     public void listenForMyEvent(MyEvent event) {
         counter.getAndIncrement();
     }
-    
+
     public void getCount() {
         return counter.get();
     }
