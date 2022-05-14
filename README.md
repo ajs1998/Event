@@ -1,4 +1,4 @@
-# An Event system in Java
+# An `Event` system in Java
 
 ## What is it?
 
