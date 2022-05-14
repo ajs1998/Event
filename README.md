@@ -78,6 +78,12 @@ public class MyEvent implements Event {
 }
 ```
 
+### Publish with your own `Executor`
+```java
+// Create a new EventPublisher that uses a fixed-size thread pool
+EventPublisher publisher = new EventPublisher(Executors.newFixedThreadPool(4));
+```
+
 ## How do I get it?
 
 ### Gradle package from GitHub Packages

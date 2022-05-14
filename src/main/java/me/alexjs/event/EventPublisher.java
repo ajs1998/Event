@@ -26,10 +26,17 @@ public class EventPublisher {
     private final Map<Class<? extends Event>, List<Subscriber>> listeners = new HashMap<>();
     private final Executor executor;
 
+    /**
+     * Create a new {@link EventPublisher} that uses a single thread to publish events
+     */
     public EventPublisher() {
         this(Executors.newSingleThreadExecutor());
     }
 
+    /**
+     * Create a new {@link EventPublisher} with a custom {@link Executor} to publish events
+     * @param executor the executor that events will be published with
+     */
     public EventPublisher(Executor executor) {
         this.executor = executor;
     }
@@ -94,6 +101,8 @@ public class EventPublisher {
      * The publisher should have no opinion on the result of one subscriber's notification.
      *
      * @param event the event to publish to registered listeners
+     *
+     * @return a {@link CompletableFuture} that blocks until the event has been published to all listeners
      */
     public CompletableFuture<Void> publish(Event event) {
 
