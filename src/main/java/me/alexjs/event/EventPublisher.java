@@ -130,8 +130,6 @@ public class EventPublisher {
 
     /**
      * Very simple data object for holding an {@link EventListener} and a {@link Method} within it
-     * <p>
-     * This class is package-private because it really doesn't need to be externally visible
      */
     private static final class Subscriber {
 
