@@ -26,7 +26,7 @@ publisher.publish(new MyEvent());
 ### Create listeners
 
 ```java
-private static class MyListenerForLogging implements EventListener {
+class MyListenerForLogging implements EventListener {
 
     @Subscribe
     public void listenForMyEvent(MyEvent event) {
@@ -42,7 +42,7 @@ private static class MyListenerForLogging implements EventListener {
 
 }
 
-private static class MyListenerThatCounts implements EventListener {
+class MyListenerThatCounts implements EventListener {
 
     private final AtomicInteger counter = new AtomicInteger(0);
 
