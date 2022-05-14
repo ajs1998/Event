@@ -1,4 +1,4 @@
-# An `Event` system in Java
+# Simple event publishing system for Java
 
 ## What is it?
 
