@@ -62,17 +62,25 @@ class MyListenerThatCounts implements EventListener {
 
 ```java
 // Very basic data object
-public class MyEvent implements Event {
+class MyEvent implements Event {
 
     private String action;
     private boolean status;
-    
+
     public String getAction() {
         return action;
     }
-    
-    public boolean getStatus() {
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public boolean isStatus() {
         return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
 }
