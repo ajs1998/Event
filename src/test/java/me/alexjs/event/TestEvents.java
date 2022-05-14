@@ -4,22 +4,23 @@ import me.alexjs.event.mock.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestEvents {
 
     @Test
-    public void testMultipleEvents() {
+    public void testMultipleEvents() throws ExecutionException, InterruptedException {
 
         EventPublisher publisher = new EventPublisher();
         Assertions.assertDoesNotThrow(() -> publisher.register(new MockListener1()));
 
         MockEvent1 event1 = new MockEvent1(new AtomicBoolean(false));
-        publisher.publish(event1);
+        publisher.publish(event1).get();
 
         MockEvent2 event2 = new MockEvent2(new AtomicInteger(0));
-        publisher.publish(event2);
+        publisher.publish(event2).get();
 
         Assertions.assertTrue(event1.getValue().get());
         Assertions.assertEquals(1, event2.getValue().get());
@@ -27,14 +28,14 @@ public class TestEvents {
     }
 
     @Test
-    public void testMultipleListeners() {
+    public void testMultipleListeners() throws ExecutionException, InterruptedException {
 
         EventPublisher publisher = new EventPublisher();
         Assertions.assertDoesNotThrow(() -> publisher.register(new MockListener1()));
         Assertions.assertDoesNotThrow(() -> publisher.register(new MockListener1()));
 
         MockEvent2 event = new MockEvent2(new AtomicInteger(0));
-        publisher.publish(event);
+        publisher.publish(event).get();
 
         Assertions.assertEquals(2, event.getValue().get());
 
@@ -51,19 +52,19 @@ public class TestEvents {
     }
 
     @Test
-    public void testNoListeners() {
+    public void testNoListeners() throws ExecutionException, InterruptedException {
 
         EventPublisher publisher = new EventPublisher();
 
         MockEvent2 event = new MockEvent2(new AtomicInteger(0));
-        publisher.publish(event);
+        publisher.publish(event).get();
 
         Assertions.assertEquals(0, event.getValue().get());
 
     }
 
     @Test
-    public void testNoSubscribers() {
+    public void testNoSubscribers() throws ExecutionException, InterruptedException {
 
         EventPublisher publisher = new EventPublisher();
 
@@ -72,14 +73,14 @@ public class TestEvents {
         Assertions.assertDoesNotThrow(() -> publisher.register(new IgnoreListener3()));
 
         MockEvent2 event = new MockEvent2(new AtomicInteger(0));
-        publisher.publish(event);
+        publisher.publish(event).get();
 
         Assertions.assertEquals(0, event.getValue().get());
 
     }
 
     @Test
-    public void testException() {
+    public void testException() throws ExecutionException, InterruptedException {
 
         EventPublisher publisher = new EventPublisher();
 
@@ -92,7 +93,7 @@ public class TestEvents {
         Assertions.assertDoesNotThrow(() -> publisher.register(listener2));
 
         MockEvent2 event = new MockEvent2(new AtomicInteger(0));
-        Assertions.assertDoesNotThrow(() -> publisher.publish(event));
+        Assertions.assertDoesNotThrow(() -> publisher.publish(event)).get();
 
         Assertions.assertEquals(1, listener1.getValue());
         Assertions.assertEquals(1, listener2.getValue());
@@ -100,7 +101,7 @@ public class TestEvents {
     }
 
     @Test
-    public void testMultipleSubscribers() {
+    public void testMultipleSubscribers() throws ExecutionException, InterruptedException {
 
         EventPublisher publisher = new EventPublisher();
 
@@ -109,14 +110,14 @@ public class TestEvents {
         Assertions.assertDoesNotThrow(() -> publisher.register(listener));
 
         MockEvent2 event = new MockEvent2(new AtomicInteger(0));
-        publisher.publish(event);
+        publisher.publish(event).get();
 
         Assertions.assertEquals(2, event.getValue().get());
 
     }
 
     @Test
-    public void testBadSubscribers() {
+    public void testBadSubscribers() throws ExecutionException, InterruptedException {
 
         EventPublisher publisher = new EventPublisher();
 
@@ -131,10 +132,32 @@ public class TestEvents {
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener4));
 
         MockEvent2 event = new MockEvent2(new AtomicInteger(0));
-        publisher.publish(event);
+        publisher.publish(event).get();
 
         // None of the methods in the listeners should have touched this value.
         Assertions.assertEquals(0, event.getValue().get());
+
+    }
+
+    @Test
+    public void testManyEvents() throws ExecutionException, InterruptedException {
+
+        EventPublisher publisher = new EventPublisher();
+
+        MockListener1 listener1 = new MockListener1();
+        MockListener1 listener2 = new MockListener1();
+        MockListener1 listener3 = new MockListener1();
+        publisher.register(listener1);
+        publisher.register(listener2);
+        publisher.register(listener3);
+
+        MockEvent2 event = new MockEvent2(new AtomicInteger(0));
+
+        for (int i = 0; i < 1000; i++) {
+            publisher.publish(event).get();
+        }
+
+        Assertions.assertEquals(3000, event.getValue().get());
 
     }
 

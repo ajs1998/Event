@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 import java.util.EventListener;
 
 /**
- * Very simple data object for holding an {@link EventListener} and a {@link Method} within it.
- *
- * This class is package-private because it really doesn't need to be externally visible.
+ * Very simple data object for holding an {@link EventListener} and a {@link Method} within it
+ * <p>
+ * This class is package-private because it really doesn't need to be externally visible
  */
 class Subscriber {
 
