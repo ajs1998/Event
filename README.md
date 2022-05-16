@@ -113,7 +113,7 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation 'me.alexjs:event:1.2.0'
+    implementation 'me.alexjs:event:2.0.0'
 }
 ```
 
