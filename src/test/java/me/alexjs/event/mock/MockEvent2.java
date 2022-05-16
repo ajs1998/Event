@@ -4,7 +4,7 @@ import me.alexjs.event.Event;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MockEvent2 implements Event {
+public final class MockEvent2 implements Event {
 
     private final AtomicInteger value;
 

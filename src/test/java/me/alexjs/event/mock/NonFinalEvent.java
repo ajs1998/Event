@@ -4,11 +4,11 @@ import me.alexjs.event.Event;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public final class MockEvent1 implements Event {
+public class NonFinalEvent implements Event {
 
     private final AtomicBoolean value;
 
-    public MockEvent1(AtomicBoolean value) {
+    public NonFinalEvent(AtomicBoolean value) {
         this.value = value;
     }
 

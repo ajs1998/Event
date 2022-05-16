@@ -3,7 +3,7 @@
 ## What is it?
 
 It's a tool for using the Publish-Subscribe pattern.
-This whole project is only four files and three of them are nearly empty.
+This whole project is only three files and two of them are nearly empty.
 You can implement as many of your own `Event` and `EventListener` types as you need.
 Your listeners may also `@Subscribe` to as many events as you need.
 
@@ -62,7 +62,7 @@ class MyListenerThatCounts implements EventListener {
 
 ```java
 // Very basic data object
-class MyEvent implements Event {
+final class MyEvent implements Event {
 
     private String action;
     private boolean status;
@@ -113,7 +113,7 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation 'me.alexjs:event:1.0.0'
+    implementation 'me.alexjs:event:1.2.0'
 }
 ```
 

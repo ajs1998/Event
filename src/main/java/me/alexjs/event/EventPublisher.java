@@ -5,11 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -17,7 +13,13 @@ import java.util.concurrent.Executors;
 /**
  * Register your subscriber methods with an {@link EventPublisher}
  * <p>
- * Only {@code public void} methods annotated with {@link Subscribe} will be registered
+ * An {@link EventListener} will only be registered if all methods annotated with {@link Subscribe}:
+ * <ul>
+ *     <li>Are public</li>
+ *     <li>Return void</li>
+ *     <li>Take exactly one parameter that is an implementation of {@link Event}</li>
+ *     <li>The {@link Event} parameter must be {@code final} or a {@code record}</li>
+ * </ul>
  */
 public class EventPublisher {
 
@@ -35,6 +37,7 @@ public class EventPublisher {
 
     /**
      * Create a new {@link EventPublisher} with a custom {@link Executor} to publish events
+     *
      * @param executor the executor that events will be published with
      */
     public EventPublisher(Executor executor) {
@@ -51,29 +54,35 @@ public class EventPublisher {
      */
     public void register(EventListener listener) {
 
-        for (Method method : listener.getClass().getDeclaredMethods()) {
+        Class<? extends EventListener> listenerClass = listener.getClass();
+        for (Method method : listenerClass.getDeclaredMethods()) {
 
             // Must be annotated with @Subscribe
             if (method.isAnnotationPresent(Subscribe.class)) {
 
                 // Must be public
                 if (!Modifier.isPublic(method.getModifiers())) {
-                    throw new IllegalArgumentException("@Subscribe-annotated method must be public");
+                    throw new IllegalArgumentException("@Subscribe-annotated method must be public: " + method);
                 }
 
                 // Must return void
                 if (method.getReturnType() != void.class) {
-                    throw new IllegalArgumentException("@Subscribe-annotated method must return void");
+                    throw new IllegalArgumentException("@Subscribe-annotated method must return void: " + method);
                 }
 
-                // Must take exactly one MonoEvent parameter
+                // Must take exactly one Event parameter
                 if (method.getParameterCount() != 1 || !Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                    throw new IllegalArgumentException("@Subscribe-annotated method must take exactly one MonoEvent parameter");
+                    throw new IllegalArgumentException("@Subscribe-annotated method must take exactly one Event parameter: " + method);
+                }
+
+                // The Event parameter must be a final class (or a record)
+                @SuppressWarnings("unchecked")
+                Class<? extends Event> type = (Class<? extends Event>) method.getParameterTypes()[0];
+                if (!Modifier.isFinal(type.getModifiers())) {
+                    throw new IllegalArgumentException("Cannot register subscriber method for non-final Event implementation: " + type);
                 }
 
                 Subscriber subscriber = new Subscriber(listener, method);
-                @SuppressWarnings("unchecked")
-                Class<? extends Event> type = (Class<? extends Event>) method.getParameters()[0].getType();
 
                 log.info("Registering listener for event: {}", type.getName());
 
@@ -101,7 +110,6 @@ public class EventPublisher {
      * The publisher should have no opinion on the result of one subscriber's notification.
      *
      * @param event the event to publish to registered listeners
-     *
      * @return a {@link CompletableFuture} that blocks until the event has been published to all listeners
      */
     public CompletableFuture<Void> publish(Event event) {

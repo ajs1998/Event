@@ -125,11 +125,13 @@ public class TestEvents {
         BadListener2 listener2 = new BadListener2();
         BadListener3 listener3 = new BadListener3();
         BadListener4 listener4 = new BadListener4();
+        BadListener5 listener5 = new BadListener5();
 
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener1));
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener2));
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener3));
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener4));
+        Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener5));
 
         MockEvent2 event = new MockEvent2(new AtomicInteger(0));
         publisher.publish(event).get();
