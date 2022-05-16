@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -144,7 +145,7 @@ public class TestEvents {
     @Test
     public void testManyEvents() throws ExecutionException, InterruptedException {
 
-        EventPublisher publisher = new EventPublisher();
+        EventPublisher publisher = new EventPublisher(Executors.newFixedThreadPool(3));
 
         MockListener1 listener1 = new MockListener1();
         MockListener1 listener2 = new MockListener1();

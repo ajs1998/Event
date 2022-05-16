@@ -27,21 +27,50 @@ public class EventPublisher {
 
     private final Map<Class<? extends Event>, List<Subscriber>> listeners = new HashMap<>();
     private final Executor executor;
+    private final boolean finalEvents;
 
     /**
      * Create a new {@link EventPublisher} that uses a single thread to publish events
+     * <p>
+     * By default, listeners must subscribe to {@code final} subtypes of {@link Event}
+     *
+     * @see #EventPublisher(boolean)
      */
     public EventPublisher() {
-        this(Executors.newSingleThreadExecutor());
+        this(true);
+    }
+
+    /**
+     * Create a new {@link EventPublisher} that uses a single thread to publish events
+     *
+     * @param finalEvents whether listeners must subscribe to {@code final} subtypes of {@link Event}
+     * @see #EventPublisher(Executor, boolean)
+     */
+    public EventPublisher(boolean finalEvents) {
+        this(Executors.newSingleThreadExecutor(), finalEvents);
+    }
+
+    /**
+     * Create a new {@link EventPublisher} with a custom {@link Executor} to publish events
+     * <p>
+     * By default, listeners must subscribe to {@code final} subtypes of {@link Event}
+     *
+     * @param executor the executor that events will be published with
+     * @see #EventPublisher(Executor, boolean)
+     */
+    public EventPublisher(Executor executor) {
+        this(executor, true);
     }
 
     /**
      * Create a new {@link EventPublisher} with a custom {@link Executor} to publish events
      *
-     * @param executor the executor that events will be published with
+     * @param executor    the executor that events will be published with
+     * @param finalEvents whether listeners must subscribe to {@code final} subtypes of {@link Event}
      */
-    public EventPublisher(Executor executor) {
+    public EventPublisher(Executor executor, boolean finalEvents) {
         this.executor = executor;
+        this.finalEvents = finalEvents;
     }
 
     /**
@@ -75,11 +104,14 @@ public class EventPublisher {
                     throw new IllegalArgumentException("@Subscribe-annotated method must take exactly one Event parameter: " + method);
                 }
 
-                // The Event parameter must be a final class (or a record)
                 @SuppressWarnings("unchecked")
                 Class<? extends Event> type = (Class<? extends Event>) method.getParameterTypes()[0];
-                if (!Modifier.isFinal(type.getModifiers())) {
-                    throw new IllegalArgumentException("Cannot register subscriber method for non-final Event implementation: " + type);
+
+                if (finalEvents) {
+                    // The Event parameter must be a final class (or a record)
+                    if (!Modifier.isFinal(type.getModifiers())) {
+                        throw new IllegalArgumentException("Cannot register subscriber method for non-final Event implementation: " + type);
+                    }
                 }
 
                 Subscriber subscriber = new Subscriber(listener, method);
