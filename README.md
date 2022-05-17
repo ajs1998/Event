@@ -3,9 +3,10 @@
 ## What is it?
 
 It's a tool for using the Publish-Subscribe pattern.
-This whole project is only three files and two of them are nearly empty.
-You can implement as many of your own `Event` and `EventListener` types as you need.
-Your listeners may also `@Subscribe` to as many events as you need.
+You can implement as many of your own `EventListener` types as you need, and your listeners may `@Subscribe` to as many
+events as you need.
+When an event is published, methods that subscribe to it, or a super class, will be invoked.
+You may supply your own `Executor` to publish events with 
 
 ## What can I do with it?
 
@@ -62,7 +63,7 @@ class MyListenerThatCounts implements EventListener {
 
 ```java
 // Very basic data object
-final class MyEvent implements Event {
+class MyEvent {
 
     private String action;
     private boolean status;
@@ -118,7 +119,8 @@ dependencies {
 ```
 
 You need to <a href="https://github.com/settings/tokens">create a GitHub Personal Access Token (PAT)</a> to be able to
-download GitHub Packages. The token only needs the `read:packages` permission to work.
+download GitHub Packages.
+The token only needs the `read:packages` permission to work.
 
 ### Maven Central package
 

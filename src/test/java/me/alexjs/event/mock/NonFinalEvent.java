@@ -1,10 +1,8 @@
 package me.alexjs.event.mock;
 
-import me.alexjs.event.Event;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class NonFinalEvent implements Event {
+public class NonFinalEvent {
 
     private final AtomicBoolean value;
 

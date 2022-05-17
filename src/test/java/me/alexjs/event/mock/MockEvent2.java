@@ -1,10 +1,8 @@
 package me.alexjs.event.mock;
 
-import me.alexjs.event.Event;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class MockEvent2 implements Event {
+public class MockEvent2 {
 
     private final AtomicInteger value;
 

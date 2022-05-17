@@ -23,8 +23,11 @@ public class TestEvents {
         MockEvent2 event2 = new MockEvent2(new AtomicInteger(0));
         publisher.publish(event2).get();
 
+        MockEvent2Subclass event3 = new MockEvent2Subclass(event2.getValue());
+        publisher.publish(event3).get();
+
         Assertions.assertTrue(event1.getValue().get());
-        Assertions.assertEquals(1, event2.getValue().get());
+        Assertions.assertEquals(2, event2.getValue().get());
 
     }
 
@@ -81,7 +84,7 @@ public class TestEvents {
     }
 
     @Test
-    public void testException() throws ExecutionException, InterruptedException {
+    public void testException() {
 
         EventPublisher publisher = new EventPublisher();
 
@@ -94,7 +97,7 @@ public class TestEvents {
         Assertions.assertDoesNotThrow(() -> publisher.register(listener2));
 
         MockEvent2 event = new MockEvent2(new AtomicInteger(0));
-        Assertions.assertDoesNotThrow(() -> publisher.publish(event)).get();
+        Assertions.assertDoesNotThrow(() -> publisher.publish(event).get());
 
         Assertions.assertEquals(1, listener1.getValue());
         Assertions.assertEquals(1, listener2.getValue());
@@ -125,14 +128,10 @@ public class TestEvents {
         BadListener1 listener1 = new BadListener1();
         BadListener2 listener2 = new BadListener2();
         BadListener3 listener3 = new BadListener3();
-        BadListener4 listener4 = new BadListener4();
-        BadListener5 listener5 = new BadListener5();
 
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener1));
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener2));
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener3));
-        Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener4));
-        Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> publisher.register(listener5));
 
         MockEvent2 event = new MockEvent2(new AtomicInteger(0));
         publisher.publish(event).get();

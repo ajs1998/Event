@@ -7,8 +7,8 @@ import java.util.EventListener;
 public class BadListener3 implements EventListener {
 
     @Subscribe
-    public void listen3(MockEvent2 event, boolean b) {
-        event.getValue().getAndIncrement();
+    public void listen4() {
+        throw new RuntimeException("uh oh! oh well, this won't happen anyway if tests pass");
     }
 
 }
